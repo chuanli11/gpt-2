@@ -4,7 +4,10 @@ import fire
 import json
 import os
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
+
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 import model, sample, encoder
 
@@ -43,8 +46,8 @@ def sample_model(
     models_dir = os.path.expanduser(os.path.expandvars(models_dir))
     enc = encoder.get_encoder(model_name, models_dir)
     hparams = model.default_hparams()
-    with open(os.path.join(models_dir, model_name, 'hparams.json')) as f:
-        hparams.override_from_dict(json.load(f))
+    # with open(os.path.join(models_dir, model_name, 'hparams.json')) as f:
+    #     hparams.override_from_dict(json.load(f))
 
     if length is None:
         length = hparams.n_ctx
@@ -66,6 +69,8 @@ def sample_model(
         ckpt = tf.train.latest_checkpoint(os.path.join(models_dir, model_name))
         saver.restore(sess, ckpt)
 
+        import time
+        start = time.time()
         generated = 0
         while nsamples == 0 or generated < nsamples:
             out = sess.run(output)
@@ -74,6 +79,9 @@ def sample_model(
                 text = enc.decode(out[i])
                 print("=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40)
                 print(text)
+        end = time.time()
+
+        print("Time cost {}".format(end - start))
 
 if __name__ == '__main__':
     fire.Fire(sample_model)

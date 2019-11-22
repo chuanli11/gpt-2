@@ -1,15 +1,26 @@
 import numpy as np
-import tensorflow as tf
-from tensorflow.contrib.training import HParams
+# import tensorflow as tf
+# from tensorflow.contrib.training import HParams
+
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+
 
 def default_hparams():
-    return HParams(
-        n_vocab=0,
-        n_ctx=1024,
-        n_embd=768,
-        n_head=12,
-        n_layer=12,
-    )
+    # return tf.contrib.training.HParams(
+    #     n_vocab=0,
+    #     n_ctx=1024,
+    #     n_embd=768,
+    #     n_head=12,
+    #     n_layer=12,
+    # )
+    from collections import namedtuple
+    hparams = namedtuple("hparams", "n_vocab n_ctx n_embd n_head n_layer")
+    return hparams(n_vocab=50257,
+                   n_ctx=1024,
+                   n_embd=768,
+                   n_head=12,
+                   n_layer=12)
 
 def shape_list(x):
     """Deal with dynamic shape in tensorflow cleanly."""
